@@ -3,48 +3,47 @@ package main
 import (
 	"fmt"
 	"io"
-
-	// Uncomment this block to pass the first stage
 	"net"
 	"os"
 )
 
-func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
+func handle_conn(c net.Conn) {
+	buf := make([]byte, 128)
 
-	// Uncomment this block to pass the first stage
-	//
+	for {
+		_, err := c.Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				return
+			}
+			fmt.Println("Error reading connection: ", err.Error())
+			os.Exit(1)
+		}
+		fmt.Println("read: ", string(buf))
+		_, err = c.Write([]byte("+PONG\r\n"))
+		if err != nil {
+			fmt.Println("Error writing connection: ", err.Error())
+			os.Exit(1)
+		}
+	}
+}
+
+func main() {
+	fmt.Println("Logs:")
+
 	l, err := net.Listen("tcp", "0.0.0.0:6379")
 	if err != nil {
 		fmt.Println("Failed to bind to port 6379")
 		os.Exit(1)
 	}
 	defer l.Close()
-	conn, err := l.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-	defer conn.Close()
-
 	for {
-		buf := make([]byte, 128)
-		_, err = conn.Read(buf)
+		conn, err := l.Accept()
 		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			fmt.Println("Error reading connection: ", err.Error())
+			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
-		fmt.Println("read: ", string(buf))
-
-		_, err = conn.Write([]byte("+PONG\r\n"))
-		if err != nil {
-			fmt.Println("Error writing connection: ", err.Error())
-			os.Exit(1)
-		}
+		go handle_conn(conn)
 	}
 
 }
