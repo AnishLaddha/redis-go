@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 
 	// Uncomment this block to pass the first stage
 	"net"
@@ -27,18 +28,23 @@ func main() {
 	}
 	defer conn.Close()
 
-	buf := make([]byte, 128)
-	_, err = conn.Read(buf)
-	if err != nil {
-		fmt.Println("Error reading connection: ", err.Error())
-		os.Exit(1)
-	}
-	fmt.Println("read: ", string(buf))
+	for {
+		buf := make([]byte, 128)
+		_, err = conn.Read(buf)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Println("Error reading connection: ", err.Error())
+			os.Exit(1)
+		}
+		fmt.Println("read: ", string(buf))
 
-	_, err = conn.Write([]byte("+PONG\r\n"))
-	if err != nil {
-		fmt.Println("Error writing connection: ", err.Error())
-		os.Exit(1)
+		_, err = conn.Write([]byte("+PONG\r\n"))
+		if err != nil {
+			fmt.Println("Error writing connection: ", err.Error())
+			os.Exit(1)
+		}
 	}
 
 }
