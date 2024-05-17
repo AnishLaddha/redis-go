@@ -17,6 +17,10 @@ func serializeBulkStream(out_str string) string {
 	return "$" + strconv.Itoa(str_len) + "\r\n" + out_str + "\r\n"
 }
 
+func serializeSimpleString(out_str string) string {
+	return "+" + out_str + "\r\n"
+}
+
 func handle_conn(c net.Conn) {
 	buf := make([]byte, 128)
 
@@ -36,7 +40,6 @@ func handle_conn(c net.Conn) {
 			os.Exit(1)
 		}
 
-		output_str := ""
 		output := ""
 
 		switch casted_result := result.(type) {
@@ -45,8 +48,9 @@ func handle_conn(c net.Conn) {
 			case parser.BulkString:
 				if strings.ToLower(first_element.Value) == "echo" {
 					second_element := casted_result.Values[1].(parser.BulkString)
-					output_str = second_element.Value
-					output = serializeBulkStream(output_str)
+					output = serializeBulkStream(second_element.Value)
+				} else if strings.ToLower(first_element.Value) == "ping" {
+					output = serializeSimpleString("PONG")
 				}
 			}
 		}
