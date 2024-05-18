@@ -6,7 +6,9 @@ import (
 	"io"
 	"net"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/codecrafters-io/redis-starter-go/app/parser"
 )
@@ -29,7 +31,6 @@ func handle_conn(c net.Conn, db *Database) {
 			fmt.Println("Error parsing RESP: ", err.Error())
 			os.Exit(1)
 		}
-		db.mux.Lock()
 
 		output := ""
 
@@ -44,22 +45,36 @@ func handle_conn(c net.Conn, db *Database) {
 				} else if command_str == "ping" {
 					output = serializeSimpleString("PONG")
 				} else if command_str == "set" {
+					result_length := len(casted_result.Values)
 					key := casted_result.Values[1].(parser.BulkString).Value
 					val := casted_result.Values[2].(parser.BulkString).Value
-					db.data[key] = val
+					expiry_time := time.Time{}
+					if result_length == 5 {
+						precision := casted_result.Values[3].(parser.BulkString).Value
+						expiry_str := casted_result.Values[4].(parser.BulkString).Value
+						expiry_ms, err := strconv.Atoi(expiry_str)
+						if err != nil {
+							fmt.Println("Error converting the expiry bulk string to int (Line 59): ", err.Error())
+							os.Exit(1)
+						}
+						if strings.ToLower(precision) == "ex" {
+							expiry_ms = expiry_ms * 1000
+						}
+						expiry_time = time.Now().Add(time.Millisecond * time.Duration(expiry_ms))
+					}
+					db.Set(key, val, expiry_time)
 					output = serializeSimpleString("OK")
 				} else if command_str == "get" {
 					key := casted_result.Values[1].(parser.BulkString).Value
-					value, exists := db.data[key]
+					value, exists := db.Get(key)
 					if !exists {
 						output = serializeBulkStream("")
 					} else {
-						output = serializeBulkStream(value)
+						output = serializeBulkStream(value.val)
 					}
 				}
 			}
 		}
-		db.mux.Unlock()
 
 		_, err = c.Write([]byte(output))
 		if err != nil {
