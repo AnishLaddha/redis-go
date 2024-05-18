@@ -1,34 +1,50 @@
-[![progress-banner](https://backend.codecrafters.io/progress/redis/9b137188-5f04-4e7e-a66b-ee333a1e68ef)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Redis-Go
 
-This is a starting point for Go solutions to the
-["Build Your Own Redis" Challenge](https://codecrafters.io/challenges/redis).
+**Redis-Go** is a Redis clone written in Go. It is compliant with RESP (Redis Serialization Protocol) version 2.
 
-In this challenge, you'll build a toy Redis clone that's capable of handling
-basic commands like `PING`, `SET` and `GET`. Along the way we'll learn about
-event loops, the Redis protocol and more.
+## Getting Started
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-# Passing the first stage
+### Prerequisites
 
-The entry point for your Redis implementation is in `app/server.go`. Study and
-uncomment the relevant code, and push your changes to pass the first stage:
+Make sure you have Go installed on your machine. You can download and install Go from [here](https://golang.org/dl/).
+
+### Installation
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/yourusername/redis-go.git
+    ```
+
+2. Navigate into the project directory:
+
+    ```sh
+    cd redis-go
+    ```
+
+3. Build the project:
+
+    ```sh
+    cd app
+    go build -o redis-go
+    ```
+
+### Running Redis-Go
+
+To run the Redis-Go server:
 
 ```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
+./redis-go
 ```
 
-That's all!
+### Testing Redis-Go
 
-# Stage 2 & beyond
+To test if the server is running correctly, open a new terminal window and use the `redis-cli`:
 
-Note: This section is for stages 2 and beyond.
+```sh
+redis-cli ping
+```
+You should expect a PONG response if everything is working correctly.
 
-1. Ensure you have `go (1.19)` installed locally
-1. Run `./spawn_redis_server.sh` to run your Redis server, which is implemented
-   in `app/server.go`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.

@@ -40,8 +40,11 @@ func handle_conn(c net.Conn, db *Database) {
 			case parser.BulkString:
 				switch command_str := strings.ToLower(first_element.Value); command_str {
 				case "echo":
-					second_element := casted_result.Values[1].(parser.BulkString)
-					output = serializeBulkStream(second_element.Value)
+					output = serializeBulkStream("")
+					if len(casted_result.Values) >= 2 {
+						second_element := casted_result.Values[1].(parser.BulkString)
+						output = serializeBulkStream(second_element.Value)
+					}
 				case "ping":
 					output = serializeSimpleString("PONG")
 				case "set":
