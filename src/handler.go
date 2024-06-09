@@ -48,7 +48,6 @@ func handle_conn(c net.Conn, db *Database) {
 				case "ping":
 					output = serializeSimpleString("PONG")
 				case "set":
-
 					output = handleSet(db, casted_result)
 				case "get":
 					output = handleGet(db, casted_result)

@@ -27,7 +27,7 @@ Make sure you have Go installed on your machine. You can download and install Go
 3. Build the project:
 
     ```sh
-    cd app
+    cd src
     go build -o redis-go
     ```
 
