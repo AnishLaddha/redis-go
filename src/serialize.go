@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
 func serializeBulkStream(out_str string) string {
 	str_len := len(out_str)
@@ -12,4 +15,8 @@ func serializeBulkStream(out_str string) string {
 
 func serializeSimpleString(out_str string) string {
 	return "+" + out_str + "\r\n"
+}
+
+func serializeInteger(out_int int) string {
+	return fmt.Sprintf(":%d\r\n", out_int)
 }

@@ -45,6 +45,12 @@ To run the Redis-Go server:
 make run
 ```
 
+To do both:
+
+```sh
+make
+```
+
 ### Testing Redis-Go
 
 To test if the server is running correctly, open a new terminal window and use the `redis-cli`:
@@ -57,4 +63,5 @@ You should expect a PONG response if everything is working correctly.
 ## Using redis-go
 You can find out more about the resp2 protocol [here](https://redis.io/docs/latest/develop/reference/protocol-spec/)
 
-redis-go currently supports: Ping, Echo, Set (with expiry), and Get. It will support Del very shortly
+redis-go currently supports: 
+Ping, Echo, Set (incl expiry), Get and Del (single key). It will support multi key Del soon.

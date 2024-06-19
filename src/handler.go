@@ -55,6 +55,9 @@ func handle_conn(c net.Conn, db *Database, aof *AOFWriter) {
 				case "get":
 					output = handleGet(db, casted_result)
 					aof.LogCommand(casted_result)
+				case "del":
+					output = handleDel(db, casted_result)
+					aof.LogCommand(casted_result)
 				}
 			}
 		}
@@ -95,6 +98,16 @@ func handleGet(db *Database, result parser.Array) string {
 	output := serializeBulkStream("")
 	if exists {
 		output = serializeBulkStream(value.val)
+	}
+	return output
+}
+
+func handleDel(db *Database, result parser.Array) string {
+	key := result.Values[1].(parser.BulkString).Value
+	existed := db.Del(key)
+	output := serializeInteger(0)
+	if existed {
+		output = serializeInteger(1)
 	}
 	return output
 }
