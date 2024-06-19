@@ -16,13 +16,15 @@ func main() {
 	}
 	defer l.Close()
 	db := newDatabase()
+	aofWriter := NewAOFWriter("../persist.aof")
+	defer aofWriter.Close()
 	for {
 		conn, err := l.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
-		go handle_conn(conn, db)
+		go handle_conn(conn, db, aofWriter)
 	}
 
 }

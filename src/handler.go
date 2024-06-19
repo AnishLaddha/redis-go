@@ -10,10 +10,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/codecrafters-io/redis-starter-go/app/parser"
+	"github.com/AnishLaddha/redis-go/src/parser"
 )
 
-func handle_conn(c net.Conn, db *Database) {
+func handle_conn(c net.Conn, db *Database, aof *AOFWriter) {
 	buf := make([]byte, 128)
 
 	for {
@@ -45,12 +45,16 @@ func handle_conn(c net.Conn, db *Database) {
 						second_element := casted_result.Values[1].(parser.BulkString)
 						output = serializeBulkStream(second_element.Value)
 					}
+					aof.LogCommand(casted_result)
 				case "ping":
 					output = serializeSimpleString("PONG")
+					aof.LogCommand(casted_result)
 				case "set":
 					output = handleSet(db, casted_result)
+					aof.LogCommand(casted_result)
 				case "get":
 					output = handleGet(db, casted_result)
+					aof.LogCommand(casted_result)
 				}
 			}
 		}

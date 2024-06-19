@@ -115,3 +115,11 @@ func parseArray(reader *bufio.Reader) (Array, error) {
 	}
 	return Array{Values: values}, nil
 }
+
+func ParseArrayToStr(arr Array) []string {
+	strings := make([]string, 0, len(arr.Values))
+	for _, elem := range arr.Values {
+		strings = append(strings, elem.(BulkString).Value)
+	}
+	return strings
+}
