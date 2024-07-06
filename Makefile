@@ -1,6 +1,6 @@
 .PHONY: all build run test
 
-all: build run
+all: clean build run
 
 build:
 	cd src && go build -o redis-go
